@@ -1,0 +1,101 @@
+*{
+    margin: 0;
+    padding: 0;
+    outline: 0;
+}
+img{
+    border: 0;
+}
+ul,ol{
+    list-style-type: none;
+}
+a{
+    text-decoration: none;
+}
+
+.clr{
+    clear: both;
+}
+
+
+
+body{
+
+}
+
+/*common css end*/
+
+.card_header{
+
+}
+
+.card_body{
+
+}
+.tbl_text {
+    padding-top: 7px;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 16px;
+    color: #000;
+}
+.card_butt_part{
+    text-align: right;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+.card_footer{
+    text-align: right;
+}
+.center {
+    text-align: center;
+}
+.col_form_label {
+    text-align: right;
+    padding-right: 0;
+    color: #000;
+    font-weight: bold;
+}
+.req_star{
+    color: #E74C3C;
+    font-weight: bold;
+}
+
+table.custom_view_table{}
+table.custom_view_table tr{}
+table.custom_view_table tr td{}
+table.custom_view_table tr td:first-child{
+    width: 40%;
+    color: #000;
+    text-align: right;
+    font-weight: bold;
+}
+table.custom_view_table tr td:last-child{
+    width: 68%;
+    text-align: left;
+}
+
+.has-error .form-control{
+	animation-name: slide;
+}
+.has-error .form-control{
+
+	background: ;
+	border: 1px solid red;
+
+}
+.has-error .invalid-feedback{
+	display: block;
+	color: red;
+	margin: 0;
+	font-style: italic;
+	padding-left: 10px;
+}
+@media print {
+  .dataTables_length, .dataTables_filter, .dataTables_info, .dataTables_paginate {
+    display: none;
+  }
+}
+.income {
+    width: 100%;
+}
