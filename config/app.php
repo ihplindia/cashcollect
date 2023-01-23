@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Expense'),
 
     /*
     |--------------------------------------------------------------------------
@@ -39,7 +39,8 @@ return [
     |
     */
 
-    'debug' => (bool) env('APP_DEBUG', false),
+    // 'debug' => (bool) env('APP_DEBUG', true),
+    'debug' => env('APP_DEBUG', true),
 
     /*
     |--------------------------------------------------------------------------
@@ -67,7 +68,7 @@ return [
     |
     */
 
-    'timezone' => 'Asia/Dhaka',
+    'timezone' => 'UTC',
 
     /*
     |--------------------------------------------------------------------------
@@ -177,6 +178,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
+        App\Providers\MailConfigServiceProvider::class,
 
     ],
 
@@ -234,6 +237,7 @@ return [
         'Image' => Intervention\Image\Facades\Image::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
+        'QrCode' => SimpleSoftwareIO\QrCode\Facades\QrCode::class,
 
     ],
 

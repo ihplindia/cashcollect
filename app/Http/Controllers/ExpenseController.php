@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Exports\ExpenseExport;
 use Maatwebsite\Excel\Facades\Excel;
-use App\models\Expense;
+use App\Models\Expense;
 use Carbon\Carbon;
 use Session;
 use Auth;

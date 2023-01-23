@@ -40,8 +40,6 @@
 							<th>Manage</th>
 						</tr>
 					</thead>
-
-
 					<tbody>
 						@foreach($all as $data)
 						<tr>

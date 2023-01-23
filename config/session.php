@@ -167,9 +167,7 @@ return [
     | the cookie from being sent to you when it can't be done securely.
     |
     */
-
     'secure' => env('SESSION_SECURE_COOKIE'),
-
     /*
     |--------------------------------------------------------------------------
     | HTTP Access Only
@@ -180,7 +178,6 @@ return [
     | the HTTP protocol. You are free to modify this option if needed.
     |
     */
-
     'http_only' => true,
 
     /*
@@ -195,7 +192,6 @@ return [
     | Supported: "lax", "strict", "none", null
     |
     */
-
     'same_site' => 'lax',
 
 ];

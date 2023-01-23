@@ -1,8 +1,12 @@
 <x-guest-layout>
     <x-auth-card>
-        <x-slot name="logo">            
-            <h1>IHPL Cash Collect Login</h1>
+        <x-slot name="logo">
+                <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
         </x-slot>
+
+        <div class="flex justify-center sm:pt-0">
+            <h1>IHPL Cash Collect</h1>
+        </div>
 
         <!-- Session Status -->
         <x-auth-session-status class="mb-4" :status="session('status')" />
@@ -11,6 +15,7 @@
         <x-auth-validation-errors class="mb-4" :errors="$errors" />
 
         <form method="POST" action="{{ route('login') }}">
+            <input type="hidden" name="url_referer" value="{{isset($url_referer)?$url_referer:''}}">
             @csrf
 
             <!-- Email Address -->
@@ -48,7 +53,7 @@
                 <x-button class="ml-3">
                     {{ __('Log in') }}
                 </x-button>
-            </div>
+            </div>            
         </form>
     </x-auth-card>
 </x-guest-layout>

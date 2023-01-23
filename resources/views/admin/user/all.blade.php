@@ -10,10 +10,26 @@
            <i class=" uil-user-exclamation "></i>  All User Information
         </div>
         <div class="col-md-4 card_butt_part">
-            <a class="btn btn-sm btn-dark" href="{{url('dashboard/user/add')}}"><i class=" uil-plus "></i>  Add User</a>
+            <a class="btn btn-sm btn-dark" href="{{route('add.user')}}"><i class=" uil-plus "></i>  Add User</a>
         </div>
     </div>
-
+    <div class="card-body card_body">
+        <div class="row">
+          <div class="col-3"></div>
+          <div class="col-6">
+            @if(Session::has('success'))
+            <div class="alert alert-success" role="alert">
+              {{session::get('success')}}
+            </div>
+            @endif
+            @if(Session::has('error'))
+            <div class="alert alert-danger" role="alert">
+              {{session::get('error')}}
+            </div>
+            @endif
+          </div>
+          <div class="col-3"></div>
+        </div>
 </div>
 <div class="card-body card_body">
     <table id="allTableInfo" class="table table-bordered table-striped table-hover dt-responsive nowrap w-100">
@@ -37,10 +53,10 @@
                         <td>{{$data->email}}</td>
                         <td>{{$data->roleInfo->role_name ?? ''}}</td>
                         <td>
-                          @if($data->photo!='')
-                          <img class="img-thumbail" height="40" src="{{asset('uploads/users/'.$data->photo)}}"/>
+                          @if($data->avatar!='')
+                          <img class="img-thumbail rounded-circle" height="40" src="{{asset('uploads/users/'.$data->avatar)}}"/>
                           @else
-                          <img class="img-thumbail" height="40" src="{{asset('uploads/avatar.png')}}"/>
+                          <img class="img-thumbail rounded-circle" height="40" src="{{asset('uploads/avatar.png')}}"/>
                           @endif
                         </td>
                         <td>
@@ -51,7 +67,7 @@
                                 <div class="dropdown-menu">
                                     <a class="dropdown-item" href="user/view/{{$data->id}}"><i class=" uil-plus "></i> View</a>
                                     <a class="dropdown-item" href="user/edit/{{$data->id}}"><i class=" uil-comment-edit"></i> Edit</a>
-                                    <a class="dropdown-item" href="user/password/{{$data->id}}"><i class=" uil-comment-edit"></i> Change Password</a>
+                                    <a class="dropdown-item" href="{{route('changepassword',$data->id)}}"><i class=" uil-comment-edit"></i> Change Password</a>
                                 </div>
                             </div>
 

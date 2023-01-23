@@ -53,7 +53,7 @@
                 </div>
                 <!-- end card body-->
                 <div class="card-footer card_footer center">
-                    <button type="submit" class="btn btn-md btn-dark">REGISTRATION</button>
+                    <button type="submit" class="btn btn-md btn-dark">Create</button>
                 </div>
             </div> <!-- end card -->
         </form>

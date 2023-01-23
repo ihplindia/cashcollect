@@ -17,7 +17,7 @@ Route::get('/register', [RegisteredUserController::class, 'create'])
 Route::post('/register', [RegisteredUserController::class, 'store'])
                 ->middleware('guest');
 
-Route::get('/login', [AuthenticatedSessionController::class, 'create'])
+Route::get('/login', [AuthenticatedSessionController::class, 'create', 'url_referer'=>'Hello'])
                 ->middleware('guest')
                 ->name('login');
 
@@ -47,6 +47,10 @@ Route::get('/verify-email', [EmailVerificationPromptController::class, '__invoke
 Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
                 ->middleware(['auth', 'signed', 'throttle:6,1'])
                 ->name('verification.verify');
+Route::get('/otp-verify', [AuthenticatedSessionController::class, 'otpsend'])
+                ->name('otp.verify');
+Route::post('/otp-confirm', [AuthenticatedSessionController::class, 'otpConfirm'])
+                ->name('otp.confirm');
 
 Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
                 ->middleware(['auth', 'throttle:6,1'])
@@ -59,6 +63,6 @@ Route::get('/confirm-password', [ConfirmablePasswordController::class, 'show'])
 Route::post('/confirm-password', [ConfirmablePasswordController::class, 'store'])
                 ->middleware('auth');
 
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+Route::any('/logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->middleware('auth')
                 ->name('logout');

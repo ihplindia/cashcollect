@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Support\Facades\Crypt;
 
 class User extends Authenticatable
 {
@@ -48,6 +49,16 @@ class User extends Authenticatable
         return $permission_groups;
     }
 
+    public static function GroupName($id)
+    {
+        
+        $name= DB::table('permission_groups')
+            ->select('group_name')
+            ->where('id',$id)
+            ->get();
+        return $name;
+    }
+
     public static function getpermissionsByGroupName($group_name)
     {
         $permissions = DB::table('permissions')
@@ -68,4 +79,48 @@ class User extends Authenticatable
         }
         return $hasPermission;
     }
+
+    public static function encrypt($id)
+	{
+		// Store the cipher method
+		$ciphering = "AES-128-CTR";
+
+		// Use OpenSSl Encryption method
+		$iv_length = openssl_cipher_iv_length($ciphering);
+		$options = 0;
+
+		// Non-NULL Initialization Vector for encryption
+		$encryption_iv = '1234567891011121';
+
+		// Store the encryption key
+		$encryption_key = "Indian Holiday Pvt. Ltd.";
+
+		// Use openssl_encrypt() function to encrypt the data
+		return $encryption = openssl_encrypt($id, $ciphering,
+		$encryption_key, $options, $encryption_iv);
+	}
+
+	public static function decrypt($id)
+	{
+		// Store the cipher method
+		$ciphering = "AES-128-CTR";
+
+		// Use OpenSSl Encryption method
+		$iv_length = openssl_cipher_iv_length($ciphering);
+		$options = 0;
+
+		// Non-NULL Initialization Vector for decryption
+		$decryption_iv = '1234567891011121';
+		
+		// Store the encryption key
+		$decryption_key = "Indian Holiday Pvt. Ltd.";
+
+		// Use openssl_decrypt() function to decrypt the data
+		$decryption=openssl_decrypt ($id, $ciphering,
+		$decryption_key, $options, $decryption_iv);
+
+		// Display the decrypted string
+		return $decryption;
+	}
+   
 }

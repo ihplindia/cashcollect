@@ -14,14 +14,13 @@
         </div>
     </div>
 
-</div>                            
+</div>
 
 <div class="card-body card_body">
     <table id="allTableInfo" class="table table-bordered table-striped table-hover dt-responsive nowrap w-100">
                 <thead class="table-dark">
                     <tr>
                         <th>Name</th>
-                        <th>Slug</th>
                         <th>Status</th>
                         <th>Manage</th>
                     </tr>
@@ -32,15 +31,13 @@
                   @foreach($allRole as $data)
                     <tr>
                         <td>{{$data->role_name}}</td>
-                        <td>{{$data->role_slug}}</td>
-                        <td>{{$data->role_status}}</td>
+                        <td>{{$data->role_status==1?'Active':'Inactive'}}</td>
                         <td>
                              <div class="btn-group">
                                 <button type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Manage
                                 </button>
                                 <div class="dropdown-menu">
-                                    <a class="dropdown-item" href="#"><i class=" uil-plus "></i> View</a>
                                     <a class="dropdown-item" href="{{url('dashboard/role/edit/'.$data->role_id)}}"><i class=" uil-comment-edit"></i> Edit</a>
                                     <a class="dropdown-item" href="#" id="softDelete" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="{{$data->role_id}}"><i class=" uil-trash "></i> Delete</a>
                                 </div>                                
@@ -54,13 +51,13 @@
             </table>
 
 </div> <!-- end card body-->
-<div class="card-footer card_footer">
+{{-- <div class="card-footer card_footer">
        <div class="btn-group mb-2">
         <a href="#" class="btn btn-secondary">Print</a>
         <a href="#" class="btn btn-dark">PDF</a>
         <a href="#" class="btn btn-secondary">Excel</a>
     </div>
-</div>
+</div> --}}
 </div> <!-- end card -->
 </div><!-- end col-->
 </div>

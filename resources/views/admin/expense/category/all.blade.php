@@ -47,7 +47,7 @@
 									<div class="dropdown-menu">
 										<a class="dropdown-item" href="{{url('dashboard/expense/category/view/'.$data->expcate_slug)}}"><i class=" uil-plus "></i> View</a>
 										<a class="dropdown-item" href="{{url('dashboard/expense/category/edit/'.$data->expcate_slug)}}"><i class=" uil-comment-edit"></i> Edit</a>
-										<a class="dropdown-item" href="#"><i class=" uil-trash "></i> Delete</a>
+										{{-- <a class="dropdown-item" href="#"><i class=" uil-trash "></i> Delete</a> --}}
 									</div>
 								</div>
 

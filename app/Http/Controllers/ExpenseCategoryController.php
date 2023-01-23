@@ -4,37 +4,44 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use App\models\ExpenseCategory;
+use App\Models\ExpenseCategory;
 use Carbon\Carbon;
 use Session;
 use Auth;
 
 
-class ExpenseCategoryController extends Controller{
-    public function __construct(){
+class ExpenseCategoryController extends Controller
+{
+    public function __construct()
+    {
         $this->middleware('auth');
     }
     
-    public function index(){
+    public function index()
+    {
       $all=ExpenseCategory::where('expcate_status',1)->orderBy('expcate_id','DESC')->get(); 
 	  return view('admin.expense.category.all',compact('all'));
     }
     
-    public function add(){
+    public function add()
+    {
         return view('admin.expense.category.add');
     }
     
-    public function edit($slug){
+    public function edit($slug)
+    {
         $data=ExpenseCategory::where('expcate_status',1)->where('expcate_slug',$slug)->firstOrFail();
 		return view('admin.expense.category.edit',compact('data'));
     }
     
-    public function view($slug){
+    public function view($slug)
+    {
         $data=ExpenseCategory::where('expcate_status',1)->where('expcate_slug',$slug)->firstOrFail();
 		return view('admin.expense.category.view',compact('data'));
     }
     
-    public function insert(Request $request){
+    public function insert(Request $request)
+    {
         $this->validate($request,[
 			'name'=>'required|unique:expense_categories,expcate_name|max:100',
 		],[

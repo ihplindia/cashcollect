@@ -20,7 +20,7 @@ class RecycleController extends Controller{
   }
   public function income(){
     $all=Income::where('income_status',0)->orderBy('income_id','DESC')->get();
-			return view('admin.recycle.income',compact('all'));
+		return view('admin.recycle.income',compact('all'));
 
   }
   public function income_category(){

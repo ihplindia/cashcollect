@@ -13,8 +13,14 @@ class ReportController extends Controller{
   public function __construct(){
     $this->middleware('auth');
   }
-  public function reports(){
+  // public function reports(){
+    public function index(){
     return view('admin.reports.reports');
+  }
+  public function view($income_id){
+    //echo $income_id;
+   $alldata=Income::where('income_status',1)->where('income_id','=',$income_id)->firstOrFail();
+    return view('admin.reports.view', compact('alldata'));
   }
   public function current(){
    $today=Carbon::now();
@@ -29,20 +35,42 @@ class ReportController extends Controller{
   }
 
   public function summary(){
-   $RtottalIncome=Income::where('income_status',1)->orderBy('income_id','DESC')->get();
-   $TottalIncome=Income::where('income_status',1)->orderBy('income_id','DESC')->sum('income_amount');
+    $RtottalIncome=Income::all();
+   //$RtottalIncome=Income::orderBy('income_id','DESC')->get();
+   $TottalIncome=Income::orderBy('incate_id','DESC')->sum('income_amount');
    $Rtottalexpense=Expense::where('expense_status',1)->orderBy('expense_id','DESC')->get();
    $Tottalexpense=Expense::where('expense_status',1)->orderBy('expense_id','DESC')->sum('expense_amount');
    return view('admin.reports.summary',compact('RtottalIncome','TottalIncome','Rtottalexpense','Tottalexpense'));
   }
 
-  public function search(Request $request){
-    $startingDate= date('Y-m-d',strtotime($request->start));
-    $endingDate= date('Y-m-d',strtotime($request->end));
-   $RtottalIncome=Income::where('income_status',1)->whereBetween('income_date',[$startingDate,$endingDate])->orderBy('income_id','DESC')->get();
-   $TottalIncome=Income::where('income_status',1)->orderBy('income_id','DESC')->sum('income_amount');
-   $Rtottalexpense=Expense::where('expense_status',1)->whereBetween('expense_date',[$startingDate,$endingDate])->orderBy('expense_id','DESC')->get();
-   $Tottalexpense=Expense::where('expense_status',1)->orderBy('expense_id','DESC')->sum('expense_amount');
-   return view('admin.reports.search',compact('startingDate','endingDate','RtottalIncome','TottalIncome','Rtottalexpense','Tottalexpense'));
+  public function search(Request $request)
+  {
+    
+      // extract($request->input());
+      $startingDate= date('Y-m-d',strtotime($start));
+      $endingDate= date('Y-m-d',strtotime($end));
+      // $key=$request->key;
+      
+      //  dd($request);
+    //$RtottalIncome=Income::whereBetween('income_date',[$startingDate,$endingDate])->orderBy('income_id','DESC')->get();
+    $RtottalIncome=Income::where('income_ref_no','Like',$keyword)
+    ->orWhere('guest_name','Like',$keyword)
+    ->orWhere('guest_email','Like',$keyword)
+    ->orWhere('tally_ref_no','Like',$keyword)
+    ->orderBy('income_id','DESC')->get();
+
+    /*
+    if($request->has('start') && $request->has('end'))
+    {
+        $RtottalIncome->whereBetween('income_date',[$startingDate,$endingDate]);
+    }
+    */
+    
+    //dd($RtottalIncome);
+    //  echo $RtottalIncome->toSql();
+
+    $TottalIncome=Income::orderBy('income_id','DESC')->sum('income_amount');
+    return view('admin.reports.search',compact('startingDate','endingDate','RtottalIncome','TottalIncome'));
   }
+
 }

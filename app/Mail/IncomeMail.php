@@ -16,23 +16,22 @@ class IncomeMail extends Mailable
      *
      * @return void
      */
-     public $utitle;
-     public $udate;
-     public $uamount;
-    public function __construct($title,$date,$amount){
-      $this->utitle=$title;
-      $this->udate=$date;
-      $this->uamount=$amount;
-}
+    public $mailData=array();
+    public $subject='';
+    public function __construct($mailData,$subject)
+    {
+        $this->mailData=$mailData;
+        $this->subject = $subject;
+    }
     /**
      * Build the message.
      *
      * @return $this
      */
     public function build(){
-      $email_title=$this->utitle;
-      $email_date=$this->udate;
-      $email_amount=$this->uamount;
-        return $this->subject('Khorcha Notification')->view('admin.income.main.newslatter',compact('email_title','email_date','email_amount'));
+      $mailData =$this->mailData;
+      $subject =$this->subject;
+
+      return $this->subject($subject)->view('admin.income.main.newslatter',compact('mailData'));
     }
 }

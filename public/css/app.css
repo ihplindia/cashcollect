@@ -467,7 +467,7 @@ button,
 table {
   border-collapse: collapse;
 }
-
+/*
 h1,
 h2,
 h3,
@@ -477,7 +477,7 @@ h6 {
   font-size: inherit;
   font-weight: inherit;
 }
-
+*/
 /**
  * Reset links to optimize for opt-in styling instead of
  * opt-out.
@@ -6322,6 +6322,8 @@ select {
 .table {
   display: table;
 }
+
+.table-responsive{ width:100%; margin-bottom:15px; overflow-y:hidden; -ms-overflow-style: -ms-autohiding-scrollbar; border:1px solid #ddd; }
 
 .inline-table {
   display: inline-table;
@@ -129105,6 +129107,7 @@ select {
 
   .xl\:col-span-1 {
     grid-column: span 1 / span 1;
+    border:red solid 1px; 
   }
 
   .xl\:col-span-2 {

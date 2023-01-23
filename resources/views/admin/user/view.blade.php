@@ -1,6 +1,5 @@
 @extends('layouts.admin')
 @section('content')
-
 <div class="row">
     <div class="col-12">
         <div class="card">
@@ -22,10 +21,10 @@
                          <table class="table table-bordered table-striped custom_view_table">
                             <tr>
                                 <td colspan="3" class="text-center">
-                                @if($data->photo!='')
-                                <img class="img-thumbail" height="150" src="{{asset('uploads/users/'.$data->photo)}}"/>
+                                @if($data->avatar!='')
+                                <img class="img-thumbail rounded-circle" height="150" src="{{asset('uploads/users/'.$data->avatar)}}"/>
                                 @else
-                                <img class="img-thumbail" height="150" src="{{asset('uploads/avatar.png')}}"/>
+                                <img class="img-thumbail rounded-circle" height="150" src="{{asset('uploads/avatar.png')}}"/>
                                 @endif
                                 </td>
                             </tr>

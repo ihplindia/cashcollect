@@ -5,7 +5,19 @@
                 <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
             </a>
         </x-slot>
+        <div class="col-6">
+            @if(Session::has('success'))
+            <script>
+                alert('OTP Verifed Successfully')
+            </script>
 
+            @endif
+            @if(Session::has('error'))
+            <script>
+                alert('OTP ERROR')
+            </script>
+            @endif
+        </div>
         <div class="mb-4 text-sm text-gray-600">
             {{ __('Thanks for signing up! Before getting started, could you verify your email address by clicking on the link we just emailed to you? If you didn\'t receive the email, we will gladly send you another.') }}
         </div>
@@ -22,7 +34,7 @@
 
                 <div>
                     <x-button>
-                        {{ __('Resend Verification Email') }}
+                        {{ __('Send Verification Email') }}
                     </x-button>
                 </div>
             </form>

@@ -51,7 +51,7 @@
                     <div class="form-group">
                         <label for="name">Permissions</label>
 
-                        <div class="form-check">
+                        <div class="form-check mt-1">
                             <input type="checkbox" class="form-check-input" id="checkPermissionAll" value="1">
                             <label class="form-check-label" for="checkPermissionAll">All</label>
                         </div>
@@ -62,7 +62,14 @@
                                 <div class="col-3">
                                     <div class="form-check">
                                         <input type="checkbox" class="form-check-input" id="{{ $i }}Management" value="{{ $group->name }}" onclick="checkPermissionByGroup('role-{{ $i }}-management-checkbox', this)">
-                                        <label class="form-check-label" for="checkPermission">{{ $group->name }}</label>
+                                        @php
+                                            $name_id = $group->name;
+                                            $gname = App\User::GroupName($name_id);
+                                                                                      
+                                        @endphp
+                                        @foreach ($gname as $key)
+                                        
+                                        <label class="form-check-label" for="checkPermission">{{ $key->group_name }}</label>
                                     </div>
                                 </div>
 
@@ -73,10 +80,11 @@
                                     @endphp
                                     @foreach ($permissions as $permission)
                                         <div class="form-check">
-                                            <input type="checkbox" class="form-check-input" name="permissions[]" id="checkPermission{{ $permission->id }}" value="{{ $permission->name }}">
+                                            <input type="checkbox" class="form-check-input" name="permissions[]" id="checkPermission{{ $permission->id }}" value="{{ $permission->id }}">
                                             <label class="form-check-label" for="checkPermission{{ $permission->id }}">{{ $permission->name }}</label>
                                         </div>
                                         @php  $j++; @endphp
+                                    @endforeach
                                     @endforeach
                                     <br>
                                 </div>

@@ -50,7 +50,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td>Creat Time</td>
+								<td>Create Time</td>
 								<td>:</td>
 								<td>{{$data->created_at->format('d-M-Y | h:i A')}}</td>
 							</tr>

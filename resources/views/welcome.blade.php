@@ -3,8 +3,8 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <title>Laravel</title>
+        <META NAME="ROBOTS" CONTENT="NOINDEX, NOFOLLOW">
+        <title>IHPL Cash Collect</title>
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -37,7 +37,12 @@
             @endif
 
             <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-                <div class="flex justify-center pt-8 sm:justify-start sm:pt-0"><h1>IHPL Cash Collect</h1></div>
+                <div class="flex justify-center pt-8 sm:justify-start sm:pt-0">
+                    <svg id="Layer_1" width="150" style="enable-background:new 0 0 426 426;" version="1.1" viewBox="0 0 426 426" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><style type="text/css">.st0{fill:#3765AF;}.st1{fill:#FCFCFC;}</style><path class="st0" d="M412.5,214.3c-9.2,58.5-27.1,75.6-58.8,114.9c-31.7,33.3-77.3,88.9-141.9,85.8c-58.5-9.2-75.6-27.1-114.9-58.8  C63.6,324.5,8,278.9,11.1,214.3c9.2-58.5,27.1-75.6,58.8-114.9c31.7-33.3,77.3-88.9,141.9-85.8c58.5,9.2,75.6,27.1,114.9,58.8  C360,104.1,415.6,149.7,412.5,214.3z"/><path class="st1" d="M234.7,129.6h39.1l15-22.5H141.9l-15,22.5h25.5c25.8,0,49.7,2,59.2,23.6h-69.7l-15,22.5h87.5c0,0.1,0,0.1,0,0.1  c0,16.2-13.5,41-57.9,41H135v21l86.1,107.6h38.3l-89-111.2c36.7-2,71.1-22.5,76-58.5h27.4l15-22.5H246  C244.3,144.5,240.6,136.1,234.7,129.6z"/></svg>                    
+                </div>
+                <div class="flex justify-center pt-8 sm:justify-start sm:pt-0">
+                    <h1>IHPL Cash Collect</h1>
+                </div>
             </div>
         </div>
     </body>
