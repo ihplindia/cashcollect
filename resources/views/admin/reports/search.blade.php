@@ -168,45 +168,83 @@
 									@php
 										$i=1;
 									@endphp
-									@if (count($RtottalIncome) >0)
+									@if (count($RtottalIncome) > 0)
 										@foreach($RtottalIncome as $income)
+                                        @php
+                                        extract($income);
+                                        @endphp
                                             <tr>
                                                 <td>{{$i}}</td>
-                                                <td>{{$income->file_ref_no}}</td>
                                                 <td>
-													@php
-                                                    $currency=App\helper::currenyType($income->income_currency);
-													echo $currencyIcon=App\helper::get_currency_symbol($currency->code);
-													@endphp
-													{{$income->income_amount}}</td>
-                                                <td>
-                                                    @php
-                                                        echo $currencyIcon.' ';
-
-                                                        echo isset($income->partial_amount)?$income->partial_amount:$income->income_amount;
-                                                    @endphp
+                                                    @if ($file_ref_no)
+                                                    {{$file_ref_no}}
+                                                    @endif
                                                 </td>
-											    <td>{{App\helper::userName($income->income_collector)}}</td>{{--  Collector Name --}}
-                                                <td>{{App\helper::userName($income->income_receiver)}}</td>{{--  Sales Name --}}
-                                                <td>{{App\helper::userName($income->income_operation)}}
-                                                </td>{{--  Operation Name --}}
-                                                <td>{{App\helper::userName($income->account_receiver)}}
-                                                </td>{{--  Account Name --}}
-                                                <td>{{isset($income->collected_date)?$income->collected_date:$income->receive_date}}</td>{{-- collection date --}}
+                                                <td>
+                                                    @if ($income_currency)
+                                                        @php
+                                                        $currency=App\helper::currenyType($income_currency);
+                                                        echo $currencyIcon=App\helper::get_currency_symbol($currency->code);
+                                                        @endphp
+                                                        {{$income_amount}}
+                                                    @endif
+                                                </td>
                                                 <td>
                                                     @php
-                                                        echo $t_days=$income->collected_days+$income->receive_days+$income->approved_days+$income->setteled_days;
+                                                         echo $currencyIcon.' '; //SPACE
                                                     @endphp
+                                                    @if (!empty($partial_amount))
+                                                        {{$partial_amount}}
+                                                    @else
+                                                        {{$income_amount}}
+                                                    @endif
+                                                </td>
+
+											    <td>
+                                                    @if ($income_collector)
+                                                    {{App\helper::userName($income_collector)}}
+                                                    @endif
+                                                </td>{{--  Collector Name --}}
+											    <td>
+                                                    @if ($income_receiver)
+                                                    {{App\helper::userName($income_receiver)}}
+                                                    @endif
+                                                </td>{{--  Sales Name --}}
+											    <td>
+                                                    @if ($income_operation)
+                                                    {{App\helper::userName($income_operation)}}
+                                                    @endif
+                                                </td>{{--  Collector Name --}}
+											    <td>
+                                                    @if ($account_receiver)
+                                                    {{App\helper::userName($account_receiver)}}
+                                                    @endif
+                                                </td>{{--  Account Name --}}
+                                                <td>
+                                                    @if ($collected_date)
+                                                        {{isset($collected_date)?$collected_date:$receive_date}}
+                                                    @endif
+                                                </td>{{-- collection date --}}
+
+                                                <td>
+                                                    @if ($setteled_days)
+                                                    @php
+                                                        echo $t_days=$collected_days+$receive_days+$approved_days+$setteled_days;
+                                                    @endphp
+                                                    @endif
                                                 </td>{{-- No of  days --}}
                                                 <td>
+                                                    @if ($approved_days)
                                                     @php
-                                                         echo $t_days=$income->collected_days+$income->receive_days+$income->approved_days;
+                                                         echo $t_days=$collected_days+$receive_days+$approved_days;
                                                     @endphp
+                                                    @endif
                                                 </td>{{-- Submission Days  days --}}
-                                                <th>
+
+                                                <td>
                                                     @php
-                                                    if($income->income_status !== 5){
-                                                        $daysdate=App\helper::PendingOn($income->income_id,$income->income_status);
+                                                    if($income_status !== 5){
+                                                        $daysdate=App\helper::PendingOn($income_id,$income_status);
                                                         // print_r($daysdate);
                                                         echo $daysdate['day'];
                                                     }
@@ -214,9 +252,9 @@
                                                         echo 'NA';
                                                     }
                                                     @endphp
-                                                    </th>
+                                                </td>
                                                 <td>
-                                                    @if ($income->income_status==5)
+                                                    @if ($income_status==5)
                                                         @php
                                                             echo 'Payment settled';
                                                         @endphp

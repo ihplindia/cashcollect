@@ -78,7 +78,12 @@
 					</tr>
 					<tr>
 						<th colspan="2"> Amount</th>
-						<td>{{ $data->currency->title}} {{$data->income_amount }} </td>
+                        @php
+                        $currency=App\helper::currenyType($data->income_currency);
+                        // print_r($currency);
+                            // die($data->income_currency);
+                        @endphp
+						<td>{{$currency->code}} {{$data->income_amount }} </td>
 					</tr>
                     @if ($data->tally_ref_no)
 					<tr>
@@ -98,12 +103,12 @@
 						<th colspan="2">Payment Category</th>
 						<td>{{$data->category->incate_name}} </td>
 					</tr>
-					@if($data->collection_amount)
+					{{-- @if($data->collection_amount)
 					<tr>
 						<th colspan="2">Collection Amount</th>
-						<td>{{$data->collection_amount }} {{ $data->currency->title}} </td>
+						<td>{{$currency->code}} {{$data->collection_amount }}  </td>
 					</tr>
-                    @endif
+                    @endif --}}
                     @if($data->amountremarks)
 					<tr>
 						<th colspan="2">Collector Remarks</th>
@@ -112,8 +117,9 @@
 					@endif
 					@if(isset($data->partial_amount))
 					<tr>
+
 						<th colspan="2">Partial Amount</th>
-						<td>{{$data->partial_amount}} {{ $data->currency->title}}</td>
+						<td>{{$currency->code}} {{$data->partial_amount}}</td>
 					</tr>
 					<tr>
 						<th colspan="2">Partial Remarks</th>
@@ -123,6 +129,14 @@
 					<tr>
 						<th colspan="2"> Collector Name</th>
 						<td>{{isset($data->user->name)?$data->user->name:'Vendor Payments'}} </td>
+					</tr>
+                    <tr>
+						<th colspan="2"> Received Name</th>
+						<td>
+
+                            {{App\helper::userName($data->income_receiver)}}
+                            {{-- {{isset($data->user->name)?$data->user->name:'Vendor Payments'}}  --}}
+                        <td>
 					</tr>
 					<tr>
 						<th colspan="2">Payment Status</th>

@@ -764,8 +764,8 @@ class IncomeController extends Controller
 
 	public function advanced()
 	{
-		$RtottalIncome=Income::all();
-		//$RtottalIncome=Income::orderBy('income_id','DESC')->get();
+		// $RtottalIncome=Income::all();
+		$RtottalIncome=Income::orderBy('income_id','DESC')->get()->toArray();
 		$TottalIncome=Income::orderBy('incate_id','DESC')->sum('income_amount');
 		return view('admin.reports.search',compact('RtottalIncome','TottalIncome'));
 		// return view('admin.reports.search',compact('TottalIncome'));

@@ -220,8 +220,6 @@ class UserController extends Controller{
           if(isset($admin_view))
             $this->admin_view=Helper::Admin_View($admin_view);
 
-            $admin_View =$userData->admin_view;
-            $admin_View=Helper::Admin_View($admin_View);
             $company= Helper::company_Name($company_id);
             $branch=Helper::Branch_Name($branch_id);
             $department=Helper::deparmentsName($department_id);
@@ -232,11 +230,11 @@ class UserController extends Controller{
 
             $logs = SysetmLogs::insert([
               'action_id'   => $id,
-              'user_id'   => Auth::user()->id,
-              'user_ip'   => \request()->ip(),
-              'title'     => 'User Modification ',
+              'user_id'     => Auth::user()->id,
+              'user_ip'     => \request()->ip(),
+              'title'       => 'User Modification ',
               'action'      => $msg,
-              'created_at' 	=> Carbon::now('Asia/Kolkata')
+              'created_at'  => Carbon::now('Asia/Kolkata')
             ]);
         Session::flash('success',' User Modification Successfully ');
         return redirect('dashboard/user');

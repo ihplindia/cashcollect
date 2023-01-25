@@ -393,7 +393,7 @@ class Helper
 					'guest' => $maildata->guest_name,	//Guest Name
 					'phone' => $maildata->guest_phone,	//Guest Phone Numbar
 					'email' => $maildata->guest_email,	//Guest Email
-					'currency' => $maildata->title, //Currency Type
+					'currency' => $maildata->code, //Currency Type
 					'amount' => $maildata->income_amount, //Amount
 					'services' => $maildata->incate_name, //Payment Type
 					'sender' => $maildata->name, //Collector and Receiver

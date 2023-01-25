@@ -5,7 +5,7 @@
 <div class="col-12">
     <form method="post" action="{{route(isset($data->id)?'update.user':'create.newuser')}}" enctype="multipart/form-data">
       @csrf
-      <input type="hidden" name="id" value="{{ isset($data->id)?$data->id:'' }}">  
+      <input type="hidden" name="id" value="{{ isset($data->id)?$data->id:'' }}">
 
           <div class="card">
             <div class="card-header card_header">
@@ -18,7 +18,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="card-body card_body">
                 <div class="row">
                     <div class="col-lg-6">
@@ -57,7 +57,7 @@
                         </div>
                     </div>
 
-                    <div class="col-lg-4">
+                    {{-- <div class="col-lg-4">
                         <label  class="col-form-label col_form_label ">User Role<span class="req_star">*</span>:</label>
                         <div class="{{$errors->has('role') ? ' has-error' : ''}}">
                           @php
@@ -75,7 +75,7 @@
                            </span>
                            @endif
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div class="col-lg-4">
                         <label  class="col-form-label col_form_label "> Company <span class="req_star">*</span>:</label>
@@ -95,7 +95,7 @@
                             </span>
                             @endif
                         </div>
-                    </div>                    
+                    </div>
 
                     <div class="col-lg-4">
                         <label  class="col-form-label col_form_label "> Branch <span class="req_star">*</span>: </label>
@@ -141,8 +141,8 @@
                               <strong>{{ $errors->first('department_id') }}</strong>
                             </span>
                             @endif
-                        </div> 
-                    </div>  
+                        </div>
+                    </div>
                     @if (!isset($data->password))
                     <div class="col-lg-4">
                         <label  class="col-form-label col_form_label ">Password<span class="req_star">*</span>:</label>
@@ -154,15 +154,15 @@
                           </span>
                           @endif
                         </div>
-                    </div>  
+                    </div>
                     @endif
                     <div class="col-lg-4">
                         <label  class="col-form-label col_form_label ">Status<span class="req_star">*</span>:</label>
                         <div class="{{$errors->has('status') ? ' has-error' : ''}} mt-2" >
-                          {{-- <input type="radio" name="status" value="1" checked> Active &nbsp; &nbsp; &nbsp; 
+                          {{-- <input type="radio" name="status" value="1" checked> Active &nbsp; &nbsp; &nbsp;
                           <input type="radio" name="status" value="0"> Inactive --}}
 
-                          <input type="radio" name="status" value="1" {{isset($data->status)?$data->status == 1 ? 'checked':'':'checked'}}> Active &nbsp; &nbsp; &nbsp; 
+                          <input type="radio" name="status" value="1" {{isset($data->status)?$data->status == 1 ? 'checked':'':'checked'}}> Active &nbsp; &nbsp; &nbsp;
                           <input type="radio" name="status" value="0" {{isset($data->status)?$data->status != 1 ? 'checked':'':''}}> Inactive
                           @if ($errors->has('status'))
                           <span class="invalid-feedback" role="alert">
@@ -170,7 +170,7 @@
                           </span>
                           @endif
                        </div>
-                    </div>  
+                    </div>
 
                     <div class="col-lg-4">
                         <label  class="col-form-label col_form_label "> Photo :</label>
@@ -179,24 +179,24 @@
                           <img class="img-thumbail rounded-circle" height="50" src="{{asset('uploads/users/'.$data->avatar)}}"/>
                           @else
                           <img class="img-thumbail rounded-circle" height="50" src="{{asset('uploads/avatar.png')}}"/>
-                          @endif  
+                          @endif
                        </div>
                        <input type="file" id="" name="pic">
-                    </div>  
+                    </div>
                     <br>
                     <div class="col-lg-12">
                         <label  class="col-form-label col_form_label ">User Type:</label>
                         <div class="mt-2">
                           <div class="mt-2">
-                            <input type="radio" name="admin_view" value="0" {{isset($data->admin_view)?$data->admin_view == 0 ? 'checked':'':''}}> Web Admin &nbsp; &nbsp; &nbsp; 
-                            <input type="radio" name="admin_view" value="1" {{isset($data->admin_view)?$data->admin_view == 1 ? 'checked':'':''}}> Admin &nbsp; &nbsp; &nbsp; 
-                            <input type="radio" name="admin_view" value="2" {{isset($data->admin_view)?$data->admin_view == 2 ? 'checked':'':'checked'}} > Accountent &nbsp; &nbsp; &nbsp; 
+                            <input type="radio" name="admin_view" value="0" {{isset($data->admin_view)?$data->admin_view == 0 ? 'checked':'':''}}> Web Admin &nbsp; &nbsp; &nbsp;
+                            <input type="radio" name="admin_view" value="1" {{isset($data->admin_view)?$data->admin_view == 1 ? 'checked':'':''}}> Admin &nbsp; &nbsp; &nbsp;
+                            <input type="radio" name="admin_view" value="2" {{isset($data->admin_view)?$data->admin_view == 2 ? 'checked':'':'checked'}} > Accountent &nbsp; &nbsp; &nbsp;
                             <input type="radio" name="admin_view" value="3" {{isset($data->admin_view)?$data->admin_view == 3 ? 'checked':'':'checked'}} > Sales &nbsp; &nbsp; &nbsp;
-                            <input type="radio" name="admin_view" value="4" {{isset($data->admin_view)?$data->admin_view == 3 ? 'checked':'':'checked'}} > OPR &nbsp; &nbsp; &nbsp; 
-                            <input type="radio" name="admin_view" value="5" {{isset($data->admin_view)?$data->admin_view == 4 ? 'checked':'':'checked'}} > Other &nbsp; &nbsp; &nbsp; 
+                            <input type="radio" name="admin_view" value="4" {{isset($data->admin_view)?$data->admin_view == 3 ? 'checked':'':'checked'}} > OPR &nbsp; &nbsp; &nbsp;
+                            <input type="radio" name="admin_view" value="5" {{isset($data->admin_view)?$data->admin_view == 4 ? 'checked':'':'checked'}} > Other &nbsp; &nbsp; &nbsp;
                          </div>
                          <br>
-                    </div>  
+                    </div>
                 </div>
             </div>
             <!-- end card body-->
@@ -207,7 +207,7 @@
   </form>
         </div>
 
-        
+
 </div><!-- end col-->
 </div>
 
@@ -225,7 +225,7 @@
                 {
                   if(data){
                       $('#branch').empty();
-                      $('#branch').append('<option value="">Select Branch</option>'); 
+                      $('#branch').append('<option value="">Select Branch</option>');
                       $.each(data, function(key, branch){
                           $('#branch').append('<option value="'+ branch.id +'">' + branch.name+ '</option>');
                       });
