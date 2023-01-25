@@ -47,6 +47,7 @@ Route::get('/verify-email', [EmailVerificationPromptController::class, '__invoke
 Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, '__invoke'])
                 ->middleware(['auth', 'signed', 'throttle:6,1'])
                 ->name('verification.verify');
+                
 Route::get('/otp-verify', [AuthenticatedSessionController::class, 'otpsend'])
                 ->name('otp.verify');
 Route::post('/otp-confirm', [AuthenticatedSessionController::class, 'otpConfirm'])

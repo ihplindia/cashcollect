@@ -19,7 +19,7 @@
               <div class="row">
 
                   <div class="row mb-3">
-                        <label  class="col-3 col-form-label col_form_label "> Country Name <span class="req_star">*</span> :</label>
+                        <label  class="col-3 col-form-label col_form_label "> Currency Name <span class="req_star">*</span> :</label>
                         <div class="col-6 {{$errors->has('title') ? ' has-error' : ''}}">
                             <input type="text" class="form-control"  name="title" value="{{$currency->title}}" required>
                             @if ($errors->has('title'))

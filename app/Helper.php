@@ -8,12 +8,29 @@ use Illuminate\Support\Facades\Session;
 
 class Helper
 {
+
+    // $diff=date_diff($date1,$date2);
     /**
      * The payment status title array.
      *
      * @var array
      */
 
+    public static function GetDays($udate='',$cdate='')
+    {
+        date_default_timezone_set("asia/Kolkata");
+        $d=date("d-m-Y");
+        $date1=date_create($udate);
+        if(!empty($cdate))
+        {
+            $date2=date_create($cdate);
+        }else
+        {
+            $date2=date_create($d);
+        }
+        $diff=date_diff($date1,$date2);
+        return $diff->format("%a");
+    }
     public static function Status($status)
     {
         if($status==1)
@@ -54,6 +71,49 @@ class Helper
 
 		return $statusArray[$status];
 	}
+
+    // // Pending on
+    public static function PendingOn($income_id='',$status='')
+	{
+        $data=DB::table('incomes')
+            ->select('income_collector','income_receiver','account_receiver','created_at','collected_date','receive_date','approved_date')
+            ->where('income_id',$income_id)
+            ->first();
+            $data = (array) $data;
+            extract($data);
+        $column='';
+		switch ($status)
+        {
+            case 1:
+                $column=$income_collector;//user id
+                $pending_days=$created_at;
+            break;
+            case 2:
+                $column=$income_collector;
+                $pending_days=$collected_date;
+            break;
+            case 3:
+                // $column1='income_operation';
+                $column=$income_receiver;
+                $pending_days=$receive_date;
+            break;
+            case 4:
+                $column=$account_receiver;
+                $pending_days=$approved_date;
+            break;
+            default:
+            $pending_days='NULL';
+            $msg='NA';
+        }
+        if($pending_days !== 'NULL' || $column=='NULL'){
+             return $d=[
+                'day'=>self::GetDays($pending_days),
+                'p_by'=>self::userName($column),
+                'msg' => isset($msg)?$msg:''
+            ];
+        }
+	}
+
 	//Payments Expired
 	public static function paymentExpired($id)
 	{
@@ -70,10 +130,11 @@ class Helper
     }
 
     //Currency Rate API
-    public static function CurrencyRateAPI($code)
+    public static function CurrencyRateAPI($code,$amount='')
     {
+        $amount=isset($amount)?$amount:1;
         $curl = curl_init();
-            $link="https://currency-converter-by-api-ninjas.p.rapidapi.com/v1/convertcurrency?have=$code&want=INR&amount=1";
+            $link="https://currency-converter-by-api-ninjas.p.rapidapi.com/v1/convertcurrency?have=$code&want=INR&amount=$amount";
             curl_setopt_array($curl, [
                 CURLOPT_URL => $link,
                 CURLOPT_RETURNTRANSFER => true,
@@ -129,7 +190,7 @@ class Helper
         $url.=$data;
         curl_setopt($ch,CURLOPT_URL,$url);
         curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-    //  curl_setopt($ch,CURLOPT_HEADER, false);
+        //  curl_setopt($ch,CURLOPT_HEADER, false);
         $output=curl_exec($ch);
         curl_close($ch);
         if($output)
@@ -139,13 +200,11 @@ class Helper
                 $ip = $_SERVER['HTTP_CLIENT_IP'];
             }
             $totalIncome 	=	DB::table('users')->where('id',$uid)->update(['otp'=>$otp]);
-            $totalIncome 	=	DB::table('system_logs')->insert(['action_id'=>$uid,'user_ip'=>$ip,'user_id'=>$uid,'title'=>'Phone verification','action'=>' '.$otp.' OTP send to '.$name.' ']);
+            $totalIncome 	=	DB::table('system_logs')->insert(['action_id'=>$uid,'user_ip'=>$ip,'user_id'=>$uid,'title'=>'OTP send for phone verification','action'=>' '.$otp.' OTP send to '.$name.' ']);
             return $output;
         }else{
             return $output;
         }
-
-
     }
 
     public static function sanetizeSMS($string)
@@ -191,17 +250,11 @@ class Helper
     }
 
 
-
-
 	//Get Count Income data with payments status accordind to users
-	public static function Dashboard($adminview,$userid,){
-        // if($login_count==0){
-        //     $login_count = ++$login_count;
-        //     $totalIncome 	=	DB::table('users')->where('id',$userid)->update(['login_count'=>$login_count]);
-        // }
-
+	public static function Dashboard($adminview,$userid,)
+    {
 		// Web Admin = 0        Admin = 1        Accountent = 2
-		if($adminview == 0 || $adminview == 1 || $adminview == 2)
+		if($adminview == 0 || $adminview == 1 || $adminview == 2 )
 		{
 			//Admin data
 			$totalIncome 	=	DB::table('incomes')->count('income_id');
@@ -222,10 +275,29 @@ class Helper
 				'expired'		=>  $expired
 			);
 		}
+        // elseif($adminview == 2) //Account data
+        // {
+		// 	$totalIncome 	=	DB::table('incomes')->where('account_receiver',$userid)->count('income_id');
+		// 	$pendingIncome	=	DB::table('incomes')->where('account_receiver',$userid)->where('income_status',1)->count('income_id');
+		// 	$collected 		=	DB::table('incomes')->where('income_receiver',$userid)->where('income_status',2)->count('income_id');
+		// 	$depositeIncome =	DB::table('incomes')->where('account_receiver',$userid)->where('income_status',3)->count('income_id');
+		// 	$approved 		= 	DB::table('incomes')->where('account_receiver',$userid)->where('income_status',4)->count('income_id');
+		// 	$completeIncome = 	DB::table('incomes')->where('account_receiver',$userid)->where('income_status',5)->count('income_id');
+		// 	$expired 		= 	DB::table('incomes')->where('income_status',0)->count('income_id');
+
+		// 	$countdata =array (
+		// 		'totalIncome' 	=>	$totalIncome,
+		// 		'pendingIncome' =>	$pendingIncome,
+		// 		'collected' 	=>	$collected,
+		// 		'depositeIncome'=>	$depositeIncome,
+		// 		'approved' 		=>	$approved,
+		// 		'completeIncome'=>	$completeIncome,
+		// 		'expired'		=>  $expired
+		// 	);
+        // }
 		// Sales = 3
 		elseif($adminview == 3 )
 		{
-
 			$totalIncome 	=	DB::table('incomes')->where('income_receiver',$userid)->count('income_id');
 			$pendingIncome	=	DB::table('incomes')->where('income_receiver',$userid)->where('income_status',1)->count('income_id');
 			$collected 		=	DB::table('incomes')->where('income_receiver',$userid)->where('income_status',2)->count('income_id');
@@ -332,7 +404,7 @@ class Helper
 		return $arraydata;
 	}
 
-	//Get Company ID
+	//Get Company ID from user id
 	public static function company_Id($id)
 	{
 
@@ -359,6 +431,17 @@ class Helper
 			->first();
 			return $branch->name;
     }
+
+    //Get Branch by Company
+    public static function getCompanyBranches($company_id)
+	{
+		$branch = DB::table('branches')
+			->select('name')
+			->where('company_id',$company_id)
+			->first();
+			return $branch->name;
+    }
+
     public static function Department_Name($id)
 	{
 		$dep = DB::table('departments')
@@ -379,11 +462,14 @@ class Helper
 	//Get User Name
 	public static function userName($id)
 	{
-		$uname = DB::table('users')
-			->select('name')
-			->where('id',$id)
-			->first();
-		return $uname->name;
+        if(!empty($id)){
+            $uname = DB::table('users')
+            ->select('name')
+            ->where('id',$id)
+            ->first();
+            return $uname->name;
+        }
+
 	}
 
 	//Get User email
@@ -395,6 +481,15 @@ class Helper
 			->first();
 		return $user->email;
 	}
+
+    public static function IncomeCategory($id)
+    {
+        $dname = DB::table('income_categories')
+            ->select('incate_name')
+            ->where('incate_id',$id)
+            ->first();
+        return $dname->incate_name;
+    }
 
 	//User Department name
 	public static function deparmentsName($id)

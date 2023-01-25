@@ -51,7 +51,7 @@
           </tr>
           <tr>
             <th> Amount </th>
-            <td> {{ number_format($amount,2)}} {{$currency }} </td>
+            <td>{{$currency}} {{ number_format($amount,2)}} </td>
           </tr>
           <tr>
             <th> Services </th>

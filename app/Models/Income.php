@@ -9,9 +9,8 @@ class Income extends Model
 {
 
     use HasFactory;
-    
-    protected $primaryKey='income_id';
 
+    protected $primaryKey='income_id';
 
     public function category()
     {

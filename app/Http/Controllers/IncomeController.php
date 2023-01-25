@@ -64,6 +64,155 @@ class IncomeController extends Controller
 		return view('admin.income.main.add');
 	}
 
+	public function insert(Request $request)
+	{
+		$count=Income::count('income_id');
+		if($count > 0)
+		{
+			$get = Income::orderBy('income_id', 'DESC')->firstOrFail('income_id');
+	        $get=json_decode($get,TRUE);
+	        $id = ++$get['income_id'];
+	        $date= date('y');
+	        $income_ref_no='IHPL00000'.$id;
+		}else
+		{
+			$income_ref_no='IHPL000001';
+		}
+
+        // echo $id = Income::latest()->id->get();
+
+
+        extract($request->input());
+
+        $currency_code = Currency::where('id',$income_currency)->firstOrFail();
+        $inr_amount = Helper::CurrencyRateAPI($currency_code->code,$income_amount);
+
+        $creator=Auth::user()->id;
+		if($collection_type==1)
+		{
+			$branch_name=$branch_name;
+		}
+		else{
+			$branch_name='';
+		}
+		$data_array = [
+			'income_ref_no'=>$income_ref_no,
+			'file_ref_no'=>$file_ref_no,
+			'guest_name'=>$guest_name,
+			'guest_phone'=>$guest_phone,
+			'guest_email'=>$guest_email,
+			'income_title'=>$income_title,
+			'incate_id'=> $incate_id,
+			'income_date'=>$income_date,
+			'income_amount'=>$income_amount,
+			'income_currency'=>$income_currency,
+			'income_receiver'=>$income_receiver,
+			'income_collector'=>$income_collector,
+			'account_receiver'=>$account_receiver,
+			'income_creator'=>$creator,
+			'collection_type'=>$collection_type,
+			'company_name'=>$company_name,
+			'vendor_detatils'=>$vendor_detatils,
+			'income_operation'=>$income_operation,
+			'inr_amount'=>$inr_amount,
+			'otherpaymentremarks'=>$otherpaymentremarks,
+			'created_at'=>Carbon::now('Asia/Kolkata')
+		];
+		$insert=Income::insertGetId($data_array);
+
+		if($insert){
+			//Check Vendor Payment And set mail
+			if($collection_type == 0)
+			{
+				$collector_name = User::where('id',$income_collector)->select('name','email')->firstOrFail();
+				$collector		= $collector_name->name;
+				$email_to 		= $collector_name->email;
+			}else{
+				$collector	= '';
+			}
+
+			$rceiver = User::where('id',$income_receiver)->select('name','email')->firstOrFail();
+			$opr = User::where('id',$income_operation)->select('name','email')->firstOrFail();
+			$services = IncomeCategory::where('incate_id',$incate_id)->select('incate_name')->firstOrFail();
+			$currency = Currency::where('id',$income_currency)->select('code')->firstOrFail();
+			//Mail variables
+			$mail = array(
+				'steps'			=> 1,
+				'collector'     => $collector,
+				'creatar'       => Auth::user()->name,
+				'income_ref_no' => $income_ref_no,
+				'createtime'    => Carbon::now('Asia/Kolkata'),
+				'guest'         => $guest_name,
+				'email'         => $guest_email,
+				'phone'         => $guest_phone,
+				'amount'        => $income_amount,
+				'currency'		=> $currency->code,
+				'services'      => $services->incate_name,
+				'receiver'      => $rceiver->name,
+				'time' 			=> $income_date,
+				'username' 		=> Auth::user()->name
+			);
+
+			if($collection_type==1)
+			{
+				$collection_type='IHPL Payment';
+			}else{
+				$collection_type='Vendor Payment';
+			}
+			$logs_array = [
+			'income_ref_no'		=>$income_ref_no,
+			'file_ref_no'		=>$file_ref_no,
+			'guest_name'		=>$guest_name,
+			'guest_phone'		=>$guest_phone,
+			'guest_email'		=>$guest_email,
+			'income_title'		=>$income_title,
+			'incate_id'			=> Helper::IncomeCategory($incate_id),
+			'income_date'		=>$income_date,
+			'income_amount'		=>$income_amount,
+			'income_currency'	=>$currency->code,
+			'income_receiver'	=>Helper::userName($income_receiver),
+			'income_collector'	=>$collector,
+			'account_receiver'	=>Helper::userName($account_receiver),
+			'income_creator'	=>Auth::user()->name,
+			'collection_type'	=>$collection_type,
+			'company_name'		=>$company_name,
+			'vendor_detatils'	=>$vendor_detatils,
+			'income_operation'	=>Helper::userName($income_operation),
+			'inr_amount'		=>$inr_amount,
+			'otherpaymentremarks'=>$otherpaymentremarks,
+			'created_at'		=>Carbon::now('Asia/Kolkata')
+		];
+			$payment = Payment_logs::insert([
+				'payment_id' 	=> $insert,
+				'user_id' 		=> Auth::user()->id,
+				'details' 		=>  Auth::user()->name .' has added a new payment ',
+				'income_values' => json_encode($logs_array),
+				'income_status' => 1,
+				'created_at' 	=> Carbon::now('Asia/Kolkata')
+			]);
+			if($collection_type == 0){
+				$email_to 		= $collector_name->email;
+			}else{
+				$email_to 		= $opr->email;//OPR
+			}
+			$subject 		= 'New collection added | '.config('app.name');
+			$config_info 	= session()->get('config_info');
+			$email_cc[] 	= $config_info['MAIL_CC'];
+			$email_cc[] 	= $opr->email;//OPR
+			$email_cc[]		= Auth::user()->email;	// creator
+			$send = Mail::to($email_to)
+				->cc($email_cc)
+				->send(new IncomeMail($mail,$subject));
+
+			Session::flash('success','Payment added successfully.');
+			return redirect('dashboard/income');
+
+		}else{
+			Session::flash('error','Opps! try again!');
+			return redirect('dashboard/income');
+		}
+	}
+
 	//Repayment againt income reffrence no.
 	public function rePayment(Request $request)
 	{
@@ -74,7 +223,7 @@ class IncomeController extends Controller
 			if($edit > 0)
 			{
 				$edit = Income::where('file_ref_no',$file_ref_no)->firstOrFail();
-				Session::flash('success','Payment created successfully.');
+				// Session::flash('success','y.');
 				return view('admin.income.main.add',compact('edit'));
 			}else
 			{
@@ -103,113 +252,6 @@ class IncomeController extends Controller
 		return view('admin.income.main.view',compact('data'));
 	}
 
-	public function insert(Request $request)
-	{
-        $get = Income::orderBy('income_id', 'DESC')->firstOrFail('income_id');
-        $get=json_decode($get,TRUE);
-        $id = ++$get['income_id'];
-        $date= date('y');
-        // echo $id = Income::latest()->id->get();
-        $income_ref_no='IHPL00000'.$id;
-
-        extract($request->input());
-
-        $currency_code = Currency::where('id',$income_currency)->firstOrFail();
-        $currency_rate_amount = Helper::CurrencyRateAPI($currency_code->code);
-
-        $creator=Auth::user()->id;
-		if($collection_type==1){
-			$branch_name=$branch_name;
-		}else{
-			$branch_name='';
-		}
-		$data_array = [
-			'income_ref_no'=>$income_ref_no,
-			'file_ref_no'=>$file_ref_no,
-			'guest_name'=>$guest_name,
-			'guest_phone'=>$guest_phone,
-			'guest_email'=>$guest_email,
-			'income_title'=>$income_title,
-			'incate_id'=> $incate_id,
-			'income_date'=>$income_date,
-			'income_amount'=>$income_amount,
-			'income_currency'=>$income_currency,
-			'income_receiver'=>$income_receiver,
-			'income_collector'=>$income_collector,
-			'income_creator'=>$creator,
-			'collection_type'=>$collection_type,
-			'company_name'=>$company_name,
-			'vendor_detatils'=>$vendor_detatils,
-			'income_operation'=>$income_operation,
-			'currency_rate'=>$currency_rate_amount,
-			'otherpaymentremarks'=>$otherpaymentremarks,
-			'created_at'=>Carbon::now('Asia/Kolkata')
-		];
-		$insert=Income::insertGetId($data_array);
-
-		if($insert){
-			//Check Vendor Payment And set mail
-			if($collection_type == 0)
-			{
-				$collector_name = User::where('id',$income_collector)->select('name','email')->firstOrFail();
-				$collector		= $collector_name->name;
-				$email_to 		= $collector_name->email;
-			}else{
-				$collector	= '';
-			}
-
-			$rceiver = User::where('id',$income_receiver)->select('name','email')->firstOrFail();
-			$opr = User::where('id',$income_operation)->select('name','email')->firstOrFail();
-			$services = IncomeCategory::where('incate_id',$incate_id)->select('incate_name')->firstOrFail();
-			$currency = Currency::where('id',$income_currency)->select('title')->firstOrFail();
-			//Mail variables
-			$mail = array(
-				'steps'			=> 1,
-				'collector'     => $collector,
-				'creatar'       => Auth::user()->name,
-				'income_ref_no' => $income_ref_no,
-				'createtime'    => Carbon::now('Asia/Kolkata'),
-				'guest'         => $guest_name,
-				'email'         => $guest_email,
-				'phone'         => $guest_phone,
-				'amount'        => $income_amount,
-				'currency'		=> $currency->title,
-				'services'      => $services->incate_name,
-				'receiver'      => $income_receiver,
-				'time' 			=> $income_date,
-				'username' 		=> Auth::user()->name
-			);
-
-			$payment = Payment_logs::insert([
-				'payment_id' 	=> $insert,
-				'user_id' 		=> Auth::user()->id,
-				'details' 		=>  Auth::user()->name .' has added a new payment ',
-				'income_values' => json_encode($data_array),
-				'income_status' => 1,
-				'created_at' 	=> Carbon::now('Asia/Kolkata')
-			]);
-			if($collection_type == 0){
-				$email_to 		= $collector_name->email;
-			}else{
-				$email_to 		= $opr->email;//OPR
-			}
-			$subject = 'New collection added | '.config('app.name');
-			$config_info 	= session()->get('config_info');
-			$email_cc[] 	= $config_info['MAIL_CC'];
-			$email_cc[] 	= $opr->email;//OPR
-			$email_cc[]		= Auth::user()->email;	// creator
-			$send = Mail::to($email_to)
-				->cc($email_cc)
-				->send(new IncomeMail($mail,$subject));
-
-			Session::flash('success','Payment added successfully.');
-			return redirect('dashboard/income');
-
-		}else{
-			Session::flash('error','Opps! try again!');
-			return redirect('dashboard/income');
-		}
-	}
 
 	public function update(Request $request)
 	{
@@ -229,7 +271,7 @@ class IncomeController extends Controller
 			'income_collector'=>$request['income_collector'],
 			'income_receiver'=>$request['income_receiver'],
 			'income_operation'=>$request['income_operation'],
-			'updated_at'=>Carbon::now('Asia/Kolkata'),
+			'account_receiver'=>$request['account_receiver'],
 		];
 		// die(json_encode($array));
 		$update = Income::where('income_id',$id)->update($array);
@@ -260,15 +302,16 @@ class IncomeController extends Controller
 
 	public function collect(Request $request)
 	{
-
 		extract($request->input());
+        $days=Helper::getDays($collected_days);
 		if($self=='self'){
 			$collected = Income::where('income_ref_no',$income_ref_no)->update([
 				'is_partial' =>$is_partial,
 				'partial_amount' =>$partial_amount,
 				'partial_remarks' =>$partial_remarks,
 				'income_status'=>'3',
-				'collection_date' => date("Y-m-d")
+                'receive_days' =>$days,
+                'receive_date' => Carbon::now('Asia/Kolkata')
 			]);
 			$logmsg = Auth::user()->name.' has collected payment from '.$guest_name.' ( self collection ) ';
 		}else{
@@ -277,7 +320,8 @@ class IncomeController extends Controller
 				'partial_amount' =>$partial_amount,
 				'partial_remarks' =>$partial_remarks,
 				'income_status'=>'2',
-				'collection_date' => date("Y-m-d")
+                'collected_days' =>$days,
+				'collected_date' => Carbon::now('Asia/Kolkata')
 			]);
 			$logmsg = Auth::user()->name.' has collected payment from '.$guest_name.' ';
 		}
@@ -322,7 +366,8 @@ class IncomeController extends Controller
 		$id = $data['id'];
 		$income_status= $data['income_status'];
 		$user = $data['user'];
-		if($income_status == 2){
+		if($income_status == 2)
+        {
 			$deatils = Auth::user()->name.' depositing payment to OPR Or Sales department';
 		}else{
 			$deatils =  Auth::user()->name.' depositing payment to account';
@@ -396,14 +441,22 @@ class IncomeController extends Controller
 	//Income File attchemenets
 	public function fileattchment(Request $request)
 	{
+        $imageName='';
+        $days=Helper::getDays($request->created_at);
 		$request->attachment;
 		$income_ref_no = $request['income_ref_no'];
-		$imageName = time() . '.' . $request->attachment->extension();
-		$path = $request->attachment->move(public_path('uploads/payments/'), $imageName);
+        if(!empty($request->attachment)){
+            $imageName = time() . '.' . $request->attachment->extension();
+		    $path = $request->attachment->move(public_path('uploads/payments/'), $imageName);
+        }
+
 		$departmentname['income_file'] = $imageName;
 		$departmentname['income_status'] = 3;
 		$departmentname['transaction_status'] = 0;
 		$departmentname['qrcode'] = 0;
+		$departmentname['vendor_remarks'] = $request->vendor_remarks;
+		$departmentname['receive_date'] = Carbon::now('Asia/Kolkata');
+		$departmentname['receive_days'] = $days;
 		$result =Income::where('income_id',$request->income_id)->update(
 			$departmentname
 		);
@@ -420,7 +473,7 @@ class IncomeController extends Controller
 			]);
 			$income_ref_no=bin2hex($income_ref_no);
 			Session::flash('success','Payment Received successfully');
-			return redirect()->route('income.view',bin2hex($request->income_ref_no))->with('success', 'File Uploades Successfully');
+			return redirect()->route('income.view',bin2hex($request->income_ref_no))->with('success', 'Payment Received successfully');
 		}
 		else
 		{
@@ -432,25 +485,36 @@ class IncomeController extends Controller
 
 	public function accept($data)
 	{
+
+        //
 		$data = unserialize(base64_decode($data));
 		$income_ref_no = $data['income_ref_no'];
 		$id = $data['id'];
-		$income_status = $data['income_status'] + 1 ;
+		$status = $data['income_status'];
 		$user = $data['user'];
 		$vendor = $data['vendor'];
-		if($income_status == 3)
+        $d=isset($data['receive_date'])?$data['receive_date']:$data['collected_date'];
+        $day=$d;
+        $days=Helper::getDays($day);
+
+		if($status == 2) //Sales person received payments
 		{
-			$account = 0;
+            $income_status = $data['income_status'] + 1 ;
 			$deatils = Auth::user()->name. ' has received the payment';
-		}else
+            $date='receive_date';
+            $day='receive_days';
+		}else //Account person received payments
 		{
-			$account = $user;
+            $income_status = $data['income_status'] + 1 ;
 			$deatils = Auth::user()->name.' has received the payment';
+            $date='approved_date';
+            $day='approved_days';
 		}
 		$received = Income::where('income_ref_no',$income_ref_no)->update([
 			'income_status'=> $income_status,
-			'account_receiver' => $account,
 			'transaction_status'=>'0',
+            $day    =>  $days,
+            $date   =>  Carbon::now('Asia/Kolkata'),
 			'qrcode'=>'0'
 			]);
 
@@ -508,7 +572,8 @@ class IncomeController extends Controller
 			'qrcode'=>'0',
 			'tally_ref_no' => $request->tally_ref_no,
 			'income_remarks' => $request->income_remarks,
-			'income_settled_type' => $request->income_settled_type
+			'income_settled_type' => $request->income_settled_type,
+            'setteled_days' => date("d-m-Y")
 		];
 		//  print_r($array); die;
 		$settled = Income::where('income_ref_no',$income_ref_no)->update($array);

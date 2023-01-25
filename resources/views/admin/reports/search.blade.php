@@ -31,9 +31,6 @@
 					<div class="col-md-11 tbl_text center">
 						<i class=" uil-search-alt "></i> Advance Search
 					</div>
-					<div class="col-md-1 tbl_text right">
-						<i class=" uil-times-square " style="cursor:pointer; font-size:20px;" id="searchCloseIcon"></i>
-					</div>
 					<form name="searchForm" method="get" action="{{route('advanced.search')}}">
 						<div class="row g-2 mt-1">
 							@php
@@ -50,9 +47,7 @@
 								$start=$_GET['start'];
 								$end=$_GET['end'];
 							}
-
-
-								@endphp
+							@endphp
 							<div class="input-group">
 								<label for="example-input-normal" class="form-label mt-1">Created between &nbsp; &nbsp; </label>
 								<input name="start" type="date" value="{{isset($start)?$start:''}}" id="s-from" name="start" class="form-control" style="margin-right:10px;" onclick="this.showPicker()">
@@ -80,11 +75,12 @@
 									if(isset($_GET['income_status']))
 									$income_status=$_GET['income_status'];
 									$status = App\Helper::paymentStatus('all');
+									$statusStr_arr = ['Expired/Cancelled','Pending/No action','Pending with Collector','Pending with Sales/OPR','Pending with accounts','Settled'];
 								@endphp
 								<select name="income_status" class="form-select">
-									<option value="">Select Status</option>
+									<option value="">Select Payment Status</option>
 									@foreach($status as $key=>$val)
-									<option value="{{$key}}" <?php if($key==$income_status){print 'selected';} ?>>{{$val}}</option>
+									<option value="{{$key}}" <?php if($key==$income_status){print 'selected';} ?> >{{$statusStr_arr[$key]}}</option>
 									@endforeach
 								</select>
 							</div>
@@ -135,7 +131,6 @@
 						</div>
 						--}}
 						<div class="row g-2 mb-3">
-
 							{{-- <div class="form-check form-switch col-md-3">
 								<input type="checkbox" class="form-check-input" name="is_expired">
 								<label class="form-check-label" for="customCheck11">Expired</label>
@@ -150,94 +145,117 @@
 						</div>
 					</form>
 					</div>
-					<table id="allTableInfo" class="table table-bordered table-striped table-hover nowrap w-100">
-					<thead class="table-dark">
-						<tr>
-							<th>S. No </th>
-							<th>File Ref. No.</th>
-							<th>Amount</th>
-							<th>Sales</th>
-							<th>OPR</th>
-							<th>Collected By</th>
-							<th>Status</th>
-							<th>Last Updated date</th>
-							<th> No of days</th>
-						</tr>
-					</thead>
-					<tbody>
-						@php
-							$i=1;
-						@endphp
-						@if (count($RtottalIncome))
-							@foreach($RtottalIncome as $income)
-							<tr>
-								@php
-									$l='';
-									if($income->income_status==0)
-									{
-										$l='text-danger';
-									}
-								@endphp
-								<td>{{$i}}</td>
-								{{-- <td>{{date('Y-m-d', strtotime($income->income_date))}}</td> --}}
-								<td><a style="color:gray" href="{{url('dashboard/income/view/'.bin2hex($income->income_ref_no))}}">{{$income->file_ref_no}}</a></td>
-								@php
-								$currency=App\helper::currenyType($income->income_currency);
-                                // {{$currency->title}} name
-
-                                @endphp
-							<td>
-                                <b>
-                                    @php
-                                    echo $currencyIcon=App\helper::get_currency_symbol($currency->code);
-                                    @endphp
-                                    </b>
-                                     {{App\Helper::setNumbur($income->income_amount)}}
-                             </td>
-								{{-- <td>{{App\helper::currenyType($income->income_currency)}} {{$income->income_amount}}</td> --}}
-								{{-- <td>{{ $income->currency->title}}  </td> --}}
-								<td>{{App\helper::userName($income->income_receiver)}}</td> {{--  Receiver Name --}}
-								<td>{{App\helper::userName($income->income_operation)}}</td>{{--  Operation Name --}}
-								<td>{{App\helper::userName($income->income_collector)}}</td>{{--  Collector Name --}}
-								<td class="{{$l}}">{{$status = App\Helper::paymentStatus($income->income_status)}} </td>
-								<td>{{date('d-m-Y',strtotime($income->updated_at))}}</td>
-								<td>
+					<div class="row" style="overflow-x:scroll; width:100%;">
+							<table id="allTableInfo" class="table table-bordered table-striped table-hover nowrap w-100 table-responsive-xl" >
+								<thead class="table-dark">
+									<tr>
+										<th>S. No </th>
+										<th>File Ref. No.</th>
+										<th>Amount</th>
+										<th>Collected Amount</th>
+										<th>Collected By</th>
+										<th>Sales</th>
+										<th>OPR</th>
+										<th>Accounts</th>
+                                        <th>Collection Date</th>
+                                        <th>No of Days</th>
+                                        <th>Submission Days</th>
+                                        <th>Pending Days</th>
+                                        <th> Pending On</th>
+									</tr>
+								</thead>
+								<tbody>
 									@php
-										// Count no of days between created date and last updated date
-										$date1=date_create($income->updated_at);
-										$date2=date_create($income->created_at);
-										$diff=date_diff($date1,$date2);
-										// echo $diff->format("%a");
-										echo '<b>'.$diff->format("%a days").'</b>';
-										// echo $income->updated_at;
+										$i=1;
 									@endphp
-								</td>
-							</tr>
-							@php $i++; @endphp
-							@endforeach
-						@else
-							<tr>
-								<td></td>
-							<p class="text-danger">No data Found</p>
-							</tr>
-						@endif
-						<tfoot class="table-dark">
-						<tr>
-							<td></td>
-							<td></td>
-							{{-- <td>{{number_format($TottalIncome,2)}}</td> --}}
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-							<td></td>
-						</tr>
-						</tfoot>
-					</tbody>
-				</table>
+									@if (count($RtottalIncome) >0)
+										@foreach($RtottalIncome as $income)
+                                            <tr>
+                                                <td>{{$i}}</td>
+                                                <td>{{$income->file_ref_no}}</td>
+                                                <td>
+													@php
+                                                    $currency=App\helper::currenyType($income->income_currency);
+													echo $currencyIcon=App\helper::get_currency_symbol($currency->code);
+													@endphp
+													{{$income->income_amount}}</td>
+                                                <td>
+                                                    @php
+                                                        echo $currencyIcon.' ';
 
+                                                        echo isset($income->partial_amount)?$income->partial_amount:$income->income_amount;
+                                                    @endphp
+                                                </td>
+											    <td>{{App\helper::userName($income->income_collector)}}</td>{{--  Collector Name --}}
+                                                <td>{{App\helper::userName($income->income_receiver)}}</td>{{--  Sales Name --}}
+                                                <td>{{App\helper::userName($income->income_operation)}}
+                                                </td>{{--  Operation Name --}}
+                                                <td>{{App\helper::userName($income->account_receiver)}}
+                                                </td>{{--  Account Name --}}
+                                                <td>{{isset($income->collected_date)?$income->collected_date:$income->receive_date}}</td>{{-- collection date --}}
+                                                <td>
+                                                    @php
+                                                        echo $t_days=$income->collected_days+$income->receive_days+$income->approved_days+$income->setteled_days;
+                                                    @endphp
+                                                </td>{{-- No of  days --}}
+                                                <td>
+                                                    @php
+                                                         echo $t_days=$income->collected_days+$income->receive_days+$income->approved_days;
+                                                    @endphp
+                                                </td>{{-- Submission Days  days --}}
+                                                <th>
+                                                    @php
+                                                    if($income->income_status !== 5){
+                                                        $daysdate=App\helper::PendingOn($income->income_id,$income->income_status);
+                                                        // print_r($daysdate);
+                                                        echo $daysdate['day'];
+                                                    }
+                                                    else{
+                                                        echo 'NA';
+                                                    }
+                                                    @endphp
+                                                    </th>
+                                                <td>
+                                                    @if ($income->income_status==5)
+                                                        @php
+                                                            echo 'Payment settled';
+                                                        @endphp
+                                                    @else
+                                                        @php
+                                                              echo isset($daysdate['p_by'])?$daysdate['p_by']:'';
+                                                        @endphp
+                                                    @endif
+                                                    </td>{{-- Pending On --}}
+                                            </tr>
+										    @php $i++; @endphp
+										@endforeach
+									@else
+										<tr>
+											<td></td>
+										<p class="text-danger">No data Found</p>
+										</tr>
+									    @endif
+									<tfoot class="table-dark">
+									<tr>
+										<td></td>
+										<td></td>
+										{{-- <td>{{number_format($TottalIncome,2)}}</td> --}}
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+										<td></td>
+									</tr>
+									</tfoot>
+								</tbody>
+							</table>
+					</div>
 			</div> <!-- end card body-->
 			<div class="card-footer card_footer d-print-none">
 				<div class="btn-group mb-2">

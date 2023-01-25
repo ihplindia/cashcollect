@@ -8,6 +8,7 @@ use App\Providers\RouteServiceProvider;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
 use Illuminate\Support\Facades\Validator;
@@ -136,7 +137,7 @@ class AuthenticatedSessionController extends Controller
                 'action_id'   => $id,
                 'user_id'   => $id,
                 'user_ip'   => \request()->ip(),
-                'title'     => ' OTP Confirmation ',
+                'title'     => $request->otp.'OTP Verification',
                 'action'      => 'Phone verification succussfully  ',
                 'created_at' 	=> Carbon::now('Asia/Kolkata')
             ]);

@@ -30,7 +30,7 @@
                 <table id="allTableInfo" class="table table-bordered table-striped table-hover dt-responsive nowrap w-100">
                     <thead class="table-dark">
                         <tr>
-                            <th> Title </th>
+                            <th> Currency Name </th>
                             <th> Rate </th>
                             <th> Symbol </th>
                             <th> Code </th>

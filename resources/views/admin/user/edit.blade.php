@@ -78,13 +78,13 @@
                     </div>
 
                     <div class="col-lg-4">
-                        <label  class="col-form-label col_form_label "> Company  <span class="req_star">*</span>:</label>
+                        <label  class="col-form-label col_form_label "> Company <span class="req_star">*</span>:</label>
                         <div class="{{$errors->has('company_id') ? ' has-error' : ''}}">
                           @php
-                            $company=App\Models\Companyinfo::where('status',1)->orderBy('id','ASC')->get();
+                          $company=App\Models\Companyinfo::where('status',1)->orderBy('id','ASC')->get();
                           @endphp
-                            <select class="form-select" aria-label="Default select example"  name="company_id" required>
-                                <option value="">Select Group</option>
+                            <select id="company" class="form-select" aria-label="Default select example"  name="company_id" required>
+                                <option value="">Select Branch</option>
                                   @foreach($company as $company)
                                 <option value="{{$company->id}}" {{isset($data->company_id)?$data->company_id == $company->id  ? 'selected' : '':''}} {{$company->id}} >{{$company->name}}</option>
                                 @endforeach
@@ -95,16 +95,23 @@
                             </span>
                             @endif
                         </div>
-                    </div>  
+                    </div>                    
 
                     <div class="col-lg-4">
-                        <label  class="col-form-label col_form_label "> Branch  <span class="req_star">*</span>: </label>
+                        <label  class="col-form-label col_form_label "> Branch <span class="req_star">*</span>: </label>
                         <div class="{{$errors->has('branch_id') ? ' has-error' : ''}}">
                           @php
-                            $branch=App\Models\Branch::where('status',1)->orderBy('id','ASC')->get();
+                            if(isset($data->company_id))
+                            {
+                              $branch=App\Models\Branch::where('status',1)->where('company_id',$data->company_id)->orderBy('id','ASC')->get();
+                            }
+                            else
+                            {
+                              $branch=App\Models\Branch::where('status',1)->orderBy('id','ASC')->get();
+                            }
                           @endphp
-                            <select class="form-select" aria-label="Default select example"  name="branch_id" required>
-                                <option value="">Select Group</option>
+                            <select id="branch" class="form-select" aria-label="Default select example" name="branch_id" required>
+                                <option value="">Select Branch</option>
                                   @foreach($branch as $branch)
                                 <option value="{{$branch->id}}" {{isset($data->branch_id)?$data->branch_id == $branch->id  ? 'selected' : '':''}} {{$branch->id}} >{{$branch->name}}</option>
                                 @endforeach
@@ -124,7 +131,7 @@
                               $department=App\Models\Department::where('status',1)->orderBy('id','ASC')->get();
                             @endphp
                             <select class="form-select" aria-label="Default select example" value=""  name="department_id" required>
-                                <option value="">Select Group</option>
+                                <option value="">Select Department</option>
                                   @foreach($department as $department)
                                 <option value="{{$department->id}}" {{isset($data->department_id)?$data->department_id == $department->id  ? 'selected' : '':''}} {{$department->id}} >{{$department->name}}</option>
                                 @endforeach
@@ -203,4 +210,35 @@
         
 </div><!-- end col-->
 </div>
+
+<script>
+      $(document).ready(function() {
+      $('#company').on('change', function() {
+        var companyID = $(this).val();
+        if(companyID) {
+            $.ajax({
+                url: '{{ url('') }}/dashboard/branch/bycompany/'+companyID,
+                type: "GET",
+                data : {"_token":"{{ csrf_token() }}"},
+                dataType: "json",
+                success:function(data)
+                {
+                  if(data){
+                      $('#branch').empty();
+                      $('#branch').append('<option value="">Select Branch</option>'); 
+                      $.each(data, function(key, branch){
+                          $('#branch').append('<option value="'+ branch.id +'">' + branch.name+ '</option>');
+                      });
+                  }else{
+                      $('#branch').empty();
+                  }
+              }
+            });
+        }else{
+          $('#branch').empty();
+        }
+      });
+      });
+</script>
+
 @endsection

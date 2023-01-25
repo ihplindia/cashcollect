@@ -84,6 +84,7 @@ Route::get('dashboard/branch/add',[BranchController::class, 'newbranch']);
 Route::post('dashboard/branch/insert',[BranchController::class, 'storedBranch'])->name('addbranch');
 Route::get('dashboard/branch/edit/{slug}',[BranchController::class, 'edit'])->name('edit.branch');
 Route::post('dashboard/branch/update',[BranchController::class, 'update'])->name('update.branch');
+Route::get('dashboard/branch/bycompany/{slug}',[BranchController::class, 'getbranch'])->name('getbranch');
 
 Route::get('dashboard/department/view/',[DepartmentController::class, 'index'])->name('alldepartment');
 Route::get('dashboard/department',[DepartmentController::class, 'add'])->name('add.department');

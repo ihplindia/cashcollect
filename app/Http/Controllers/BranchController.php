@@ -114,4 +114,10 @@ class BranchController extends Controller
             return redirect('dashboard/branch/'.$request['company_id']);
         }
     }
+
+    public function getbranch($com_id)
+    {
+        $branches= Branch::where('company_id',$com_id)->get();
+        return json_encode($branches);
+    }
 }

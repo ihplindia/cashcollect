@@ -171,6 +171,28 @@
                                 </div>
                             </div>
                             <div class="col-lg-6">
+                                <label class="col-form-label col_form_label ">Account  Person <span class="req_star">*</span>:</label>
+                                <div class="{{$errors->has('account_receiver') ? ' has-error' : ''}}">
+                                    @php
+                                    $alluser =\App\Models\User::where('status',1)->where('role',16)->orderBy('name','ASC')->get();
+                                    @endphp
+                                    <select class="form-select" id="" name="account_receiver" required>
+                                        <option value="">Select User</option>
+                                        @foreach($alluser as $user)
+                                            @php
+                                                $d = App\Helper::deparmentsName($user->department_id);
+                                            @endphp
+                                            <option value="{{$user->id}} " {{isset($edit->account_receiver)?$user->id==$edit->account_receiver?'selected':'':''}}>{{$user->name}} ({{$d}})</option>
+                                        @endforeach
+                                    </select>
+                                    @if ($errors->has('account_receiver'))
+                                    <span class="invalid-feedback" role="alert">
+                                        <strong>{{ $errors->first('account_receiver') }}</strong>
+                                    </span>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
                                 <label class="col-form-label col_form_label">Guest name<span class="req_star">*</span>:</label>
                                 <div class="{{$errors->has('guest_name') ? ' has-error' :''}} ">
                                     <input type="text" class="form-control" required id="" name="guest_name" value="{{isset($edit->guest_name)?$edit->guest_name:''}}" required>
@@ -295,4 +317,33 @@
         </form>
     </div><!-- end col-->
 </div>
+<script>
+      $(document).ready(function() {
+      $('#company_name').on('change', function() {
+        var companyID = $(this).val();
+        if(companyID) {
+            $.ajax({
+                url: '{{ url('') }}/dashboard/branch/bycompany/'+companyID,
+                type: "GET",
+                data : {"_token":"{{ csrf_token() }}"},
+                dataType: "json",
+                success:function(data)
+                {
+                  if(data){
+                      $('#branch').empty();
+                      $('#branch').append('<option value="">Select Branch</option>'); 
+                      $.each(data, function(key, branch){
+                          $('#branch').append('<option value="'+ branch.id +'">' + branch.name+ '</option>');
+                      });
+                  }else{
+                      $('#branch').empty();
+                  }
+              }
+            });
+        }else{
+          $('#branch').empty();
+        }
+      });
+      });
+</script>
 @endsection
